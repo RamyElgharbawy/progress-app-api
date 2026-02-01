@@ -2,12 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { IAppConfig } from './config/app.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Get config service
   const configService = app.get(ConfigService);
+  const appConfig = configService.get<IAppConfig>('app');
 
   // 1. Security middleware
   // TODO: app.use(helmet());
@@ -36,24 +38,22 @@ async function bootstrap() {
   // app.useGlobalGuards(new JwtAuthGuard(reflector));
 
   // Global Prefix for Api Version
-  const apiPrefix = configService.get('API_PREFIX', 'api');
-  const apiVersion = configService.get('API_VERSION', 'v1');
-
-  app.setGlobalPrefix(`${apiPrefix}/${apiVersion}`);
+  app.setGlobalPrefix(`${appConfig?.apiPrefix}/${appConfig?.apiVersion}`);
 
   // Enable CORS
   app.enableCors({
-    origin: configService.get('CORS_ORIGIN', '*'), //TODO: Configure this based on your frontend URL in production
+    origin: appConfig?.corsOrigin, //TODO: Configure this based on your frontend URL in production
     credentials: true,
   });
 
   // 6. Enable shutdown hooks(graceful shutdown)
   app.enableShutdownHooks();
 
-  const port = configService.get('PORT', 3000);
+  // Start server
+  const port = appConfig?.port || 3000;
   await app.listen(port);
+
   console.log(`🚀 Progress-App API is running on: ${await app.getUrl()}`);
-  // console.log(`📝 API Documentation: ${await app.getUrl()}/api`);
   console.log(`🌐 Environment: ${configService.get('NODE_ENV')}`);
 }
 bootstrap();

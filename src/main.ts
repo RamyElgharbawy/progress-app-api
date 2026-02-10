@@ -3,17 +3,20 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IAppConfig } from './config/app.config';
-import { WinstonModule } from 'nest-winston';
-import { winstonConfig } from './config/winston.config';
+import { WinstonLoggerService } from './common/logger/winston-logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: WinstonModule.createLogger(winstonConfig),
+    bufferLogs: true, // Buffer logs until Winston is ready
   });
 
   // Get config service
   const configService = app.get(ConfigService);
   const appConfig = configService.get<IAppConfig>('app');
+
+  // Use Winston logger
+  const logger = app.get(WinstonLoggerService);
+  app.useLogger(logger);
 
   // 1. Security middleware
   // TODO: app.use(helmet());
@@ -57,7 +60,7 @@ async function bootstrap() {
   const port = appConfig?.port || 3000;
   await app.listen(port);
 
-  console.log(`🚀 Progress-App API is running on: ${await app.getUrl()}`);
-  console.log(`🌐 Environment: ${configService.get('NODE_ENV')}`);
+  logger.log(`🚀 Progress-App API is running on: ${await app.getUrl()}`);
+  logger.log(`🌐 Environment: ${configService.get('NODE_ENV')}`);
 }
-bootstrap();
+void bootstrap();

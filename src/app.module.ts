@@ -8,7 +8,7 @@ import { validate } from './config/utils/validate-config';
 import { CommonEnvValidation } from './config/validation/common.env.validation';
 import { LoggerModule } from './common/logger/logger.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { WinstonLoggingInterceptor } from './common/interceptors/winston-logging.interceptor';
+import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { WinstonLoggingInterceptor } from './common/interceptors/winston-logging
     AppService,
     {
       provide: APP_INTERCEPTOR,
-      useClass: WinstonLoggingInterceptor,
+      useClass: HttpLoggingInterceptor,
     },
   ],
 })

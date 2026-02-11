@@ -6,6 +6,7 @@ import {
   IsBoolean,
   IsOptional,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CommonEnvValidation {
   // Application Environment Config
@@ -13,31 +14,33 @@ export class CommonEnvValidation {
   NODE_ENV: Environment;
 
   @IsNumber()
+  @Type(() => Number)
   PORT: number;
 
   // Database Config
   @IsString()
-  DB_HOST: string;
+  DATABASE_HOST: string;
 
   @IsNumber()
-  DB_PORT: number;
+  @Type(() => Number)
+  DATABASE_PORT: number;
 
   @IsString()
-  DB_USERNAME: string;
+  DATABASE_USERNAME: string;
 
   @IsString()
-  DB_PASSWORD: string;
+  DATABASE_PASSWORD: string;
 
   @IsString()
-  DB_DATABASE: string;
+  DATABASE_NAME: string;
 
   @IsBoolean()
   @IsOptional()
-  DB_SYNCHRONIZE?: boolean;
+  DATABASE_SYNCHRONIZE?: boolean;
 
   @IsBoolean()
   @IsOptional()
-  DB_LOGGING?: boolean;
+  DATABASE_LOGGING?: boolean;
 
   // JWT Config
   @IsString()

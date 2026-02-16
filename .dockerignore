@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+.pnpm-store
+.pnpm
+
+# Git
+.git
+.gitignore
+
+# Build outputs
+dist
+
+# Environment
+.env*
+!.env.example
+
+# IDE
+.vscode
+.idea
+
+# Logs
+logs
+*.log
+
+# Documentation
+*.md
+
+# Keep these
+!src/
+!src/**/*
+!ormconfig.ts
+!tsconfig.json
+!package*.json

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: progress-dev-postgres
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: progress_db
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - nestjs-network
+
+volumes:
+  postgres_dev_data:
+
+networks:
+  nestjs-network:
+    driver: bridge

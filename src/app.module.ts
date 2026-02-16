@@ -9,13 +9,18 @@ import { CommonEnvValidation } from './config/validation/common.env.validation';
 import { LoggerModule } from './common/logger/logger.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
+import { DatabaseModule } from './database/database.module';
+import databaseConfig from './config/database.config';
+import { UsersModule } from './modules/user/users.module';
 
 @Module({
   imports: [
+    DatabaseModule,
     LoggerModule,
+    UsersModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig],
+      load: [appConfig, databaseConfig],
       envFilePath: getEnvName(),
       validate: validate(CommonEnvValidation),
       cache: true,

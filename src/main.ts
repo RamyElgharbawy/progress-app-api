@@ -4,6 +4,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IAppConfig } from './config/app.config';
 import { WinstonLoggerService } from './common/logger/winston-logger.service';
+import { SwaggerModule } from '@nestjs/swagger';
+import { swaggerConfig } from './config/swagger.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -56,11 +58,16 @@ async function bootstrap() {
   // 6. Enable shutdown hooks(graceful shutdown)
   app.enableShutdownHooks();
 
+  // Swagger setup
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, document);
+
   // Start server
   const port = appConfig?.port || 3000;
   await app.listen(port);
 
   logger.log(`🚀 Progress-App API is running on: ${await app.getUrl()}`);
+  logger.log(`📝 API Documentation: ${await app.getUrl()}/api`);
   logger.log(`🌐 Environment: ${configService.get('NODE_ENV')}`);
 }
 void bootstrap();

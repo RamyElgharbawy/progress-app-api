@@ -1,11 +1,5 @@
-import {
-  IsString,
-  MinLength,
-  ValidateIf,
-  Validate,
-  ValidationArguments,
-} from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, MinLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 import { PartialType } from '@nestjs/mapped-types';
 import { Match } from '@/common/decorators/match.decorator';
 

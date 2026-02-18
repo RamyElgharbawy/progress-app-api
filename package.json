@@ -30,7 +30,10 @@
     "migration:create": "npm run typeorm -- migration:create",
     "migration:run": "npm run typeorm -- migration:run -d src/config/typeorm.config.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/config/typeorm.config.ts",
-    "migration:show": "npm run typeorm -- migration:show -d src/config/typeorm.config.ts"
+    "migration:show": "npm run typeorm -- migration:show -d src/config/typeorm.config.ts",
+    "docker:down": "docker-compose -f docker-compose.dev.yml down",
+    "docker:up": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:ps": "docker-compose -f docker-compose.dev.yml ps"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

@@ -593,3 +593,147 @@ du -sh logs/
 - LoggerModule: Global logger module setup
 
 - view-logs.js: Log management utility script
+
+### 🔐 Passport Authentication Service
+
+## Protecting Routes
+
+Method 1: Use @UseGuards(JwtAuthGuard) on specific routes
+
+```typescript
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+
+@Controller('users')
+export class UserController {
+  @UseGuards(JwtAuthGuard) // ← Protect this route
+  @Get('me')
+  getCurrentUser(@CurrentUser() user: { id: string; userName: string }) {
+    return user;
+  }
+
+  @UseGuards(JwtAuthGuard) // ← Protect this route
+  @Get()
+  findAll() {
+    return this.userService.findAll();
+  }
+}
+```
+
+Method 2: Global Guard (Protect all routes by default)
+Update app.module.ts:
+
+```typescript
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+
+@Module({
+providers: [
+// ... other providers
+
+    // ✅ Global auth guard - all routes require auth by default
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+
+],
+})
+export class AppModule {}
+
+Then mark public routes with @Public() decorator:
+
+import { Controller, Post } from '@nestjs/common';
+import { Public } from '../auth/decorators/public.decorator';
+
+@Controller('auth')
+export class AuthController {
+@Public() // ← This route bypasses auth
+@Post('login')
+login(@Body() loginDto: LoginDto) {
+return this.authService.login(loginDto);
+}
+
+@Public() // ← This route bypasses auth
+@Post('register')
+register(@Body() registerDto: RegisterDto) {
+return this.authService.register(registerDto);
+}
+}
+```
+
+Recommendation: Use Method 2 (Global Guard) for better security - routes are protected by default, you explicitly mark public routes.
+
+## Using the CurrentUser Decorator
+
+The @CurrentUser() decorator gives you easy access to the authenticated user:
+
+```typescript
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+
+@Controller('posts')
+export class PostsController {
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  createPost(
+    @Body() createPostDto: CreatePostDto,
+    @CurrentUser() user: { id: string; userName: string },
+  ) {
+    // user.id contains the authenticated user's ID
+    return this.postsService.create(createPostDto, user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('my-posts')
+  getMyPosts(@CurrentUser() user: { id: string }) {
+    return this.postsService.findByUserId(user.id);
+  }
+}
+
+
+📚 How It Works:
+-----------------
+
+1. User sends POST /auth/login with credentials
+   ↓
+2. AuthService validates credentials
+   ↓
+3. If valid, generates JWT token with user info
+   ↓
+4. Returns token to user
+   ↓
+5. User includes token in Authorization header for protected routes
+   ↓
+6. JwtAuthGuard extracts and verifies token
+   ↓
+7. JwtStrategy validates user still exists and is active
+   ↓
+8. User object attached to request.user
+   ↓
+9. Route handler executes with authenticated user
+
+🎯 Features Included:
+----------------------
+✅ User registration with password hashing
+✅ User login with JWT token generation
+✅ JWT token validation via Passport
+✅ Protected routes with @UseGuards(JwtAuthGuard)
+✅ Public routes with @Public() decorator
+✅ Easy user access with @CurrentUser() decorator
+✅ Token expiration (configurable)
+✅ Active user check (deactivated users can't login)
+✅ Password validation
+✅ Username uniqueness check
+
+🚨 Security Best Practices:
+----------------------------
+JWT_SECRET: Use a strong random string in production
+Token Expiration: Set appropriate expiration (7d, 30d, etc.)
+Password Strength: Enforce minimum 8 characters
+HTTPS: Always use HTTPS in production
+Rate Limiting: Add rate limiting to login/register endpoints
+Refresh Tokens: Consider implementing refresh tokens for long-lived sessions
+```

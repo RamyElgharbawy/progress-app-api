@@ -12,8 +12,9 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { UserService } from './users.service';
+import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from './dto/user.dto';
+import { Public } from '../Auth/decorators/public.decorator';
 
 @ApiTags('Users')
 @Controller('users')
@@ -32,6 +33,7 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Get all users with pagination' })
   @ApiQuery({ name: 'page', required: false, type: Number })

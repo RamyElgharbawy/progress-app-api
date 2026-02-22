@@ -49,7 +49,7 @@ export class CommonEnvValidation {
 
   @IsNumber()
   @IsOptional()
-  JWT_EXPIRATION?: number;
+  JWT_EXPIRES_IN?: number;
 
   // API Config
   @IsString()

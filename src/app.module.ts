@@ -17,6 +17,8 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { AuthModule } from './modules/Auth/auth.module';
 import { JwtAuthGuard } from './modules/Auth/guards/jwt-auth.guard';
 import jwtConfig from './config/jwt.config';
+import { PlanModule } from './modules/plan/plan.module';
+import { TaskModule } from './modules/task/task.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import jwtConfig from './config/jwt.config';
     }),
     UserModule,
     AuthModule,
+    PlanModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [

@@ -14,59 +14,59 @@ import { TaskStatus } from '../enums/task-status.enum';
 @Entity('tasks')
 export class Task {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ name: 'plan_id' })
-  planId: string;
+  planId!: string;
 
   @ManyToOne(() => Plan, (plan) => plan.tasks, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'plan_id' })
-  plan: Plan;
+  plan!: Plan;
 
   // Self-referencing for parent-child relationship
   @Column({ name: 'parent_id', type: 'uuid', nullable: true })
-  parentId: string | null;
+  parentId!: string | null;
 
   @ManyToOne(() => Task, (task) => task.subtasks, { nullable: true })
   @JoinColumn({ name: 'parent_id' })
-  parent: Task | null;
+  parent!: Task | null;
 
   @OneToMany(() => Task, (task) => task.parent)
-  subtasks: Task[];
+  subtasks!: Task[];
 
   @Column({ length: 255 })
-  name: string;
+  name!: string;
 
   @Column({ name: 'job_description', type: 'text', nullable: true })
-  jobDescription: string;
+  jobDescription!: string;
 
   @Column({ length: 100, nullable: true })
-  area: string;
+  area!: string;
 
   @Column({ length: 100, nullable: true })
-  department: string;
+  department!: string;
 
   @Column({ type: 'int', nullable: true })
-  duration: number;
+  duration!: number;
 
   @Column({ name: 'planned_duration', length: 50, nullable: true })
-  plannedDuration: string; // e.g., "8 hours"
+  plannedDuration!: string; // e.g., "8 hours"
 
   @Column({ name: 'need_permits', default: false })
-  needPermits: boolean;
+  needPermits!: boolean;
 
   // Scheduling
   @Column({ name: 'scheduled_start', type: 'timestamp' })
-  scheduledStart: Date;
+  scheduledStart!: Date;
 
   @Column({ name: 'scheduled_end', type: 'timestamp' })
-  scheduledEnd: Date;
+  scheduledEnd!: Date;
 
   @Column({ name: 'actual_start', type: 'timestamp', nullable: true })
-  actualStart: Date | null;
+  actualStart!: Date | null;
 
   @Column({ name: 'actual_end', type: 'timestamp', nullable: true })
-  actualEnd: Date | null;
+  actualEnd!: Date | null;
 
   // Status & Progress
   @Column({
@@ -74,19 +74,19 @@ export class Task {
     enum: TaskStatus,
     default: TaskStatus.NOT_STARTED,
   })
-  status: TaskStatus;
+  status!: TaskStatus;
 
   @Column({ type: 'int', default: 0 })
-  progress: number; // 0-100
+  progress!: number; // 0-100
 
   // For UI state (not persisted in DB - transient)
   isExpanded?: boolean;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   // Helper method to check if this is a main task (no parent)
   get isMainTask(): boolean {

@@ -4,19 +4,22 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { TaskRepository } from './repositories/task.repository';
-import { PlanRepository } from '../plan/repositories/plan.repository';
 import { Task } from './entities/task.entity';
 import { TaskDependency } from './entities/task-dependency.entity';
 import { CreateTaskDependencyDto, CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskStatus } from './enums/task-status.enum';
 import { TaskMapper } from './mappers/task.mapper';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Plan } from '../plan/entities/plan.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TaskService {
   constructor(
     private readonly taskRepository: TaskRepository,
-    private readonly planRepository: PlanRepository,
+    @InjectRepository(Plan)
+    private readonly planRepository: Repository<Plan>,
   ) {}
 
   /**
@@ -24,7 +27,7 @@ export class TaskService {
    */
   async create(planId: string, createTaskDto: CreateTaskDto): Promise<Task> {
     // Verify plan exists
-    const plan = await this.planRepository.findById(planId);
+    const plan = await this.planRepository.findBy({ id: planId });
     if (!plan) {
       throw new NotFoundException(`Plan with ID ${planId} not found`);
     }
@@ -246,6 +249,6 @@ export class TaskService {
 
   private async recalculatePlanProgress(planId: string): Promise<void> {
     const progress = await this.taskRepository.calculatePlanProgress(planId);
-    await this.planRepository.updateProgress(planId, progress);
+    await this.planRepository.update(planId, { progress });
   }
 }

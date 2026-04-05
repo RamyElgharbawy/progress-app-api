@@ -23,7 +23,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskStatus } from './enums/task-status.enum';
 
 @ApiTags('Tasks')
-@ApiBearerAuth()
+@ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 @Controller('tasks')
 export class TaskController {
@@ -107,7 +107,7 @@ export class TaskController {
   @ApiResponse({ status: 404, description: 'Task not found' })
   async updateStatus(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body('status') status: TaskStatus,
+    @Body() status: TaskStatus,
   ) {
     return this.taskService.updateStatus(id, status);
   }
@@ -159,7 +159,7 @@ export class TaskController {
 // ─── Plan-scoped Task Controller ────────────────────────────────────────────
 
 @ApiTags('Plans')
-@ApiBearerAuth()
+@ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 @Controller('plans/:planId/tasks')
 export class PlanTaskController {
@@ -204,7 +204,7 @@ export class PlanTaskController {
 // ─── Dependency Controller ──────────────────────────────────────────────────
 
 @ApiTags('Task Dependencies')
-@ApiBearerAuth()
+@ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 @Controller('dependencies')
 export class DependencyController {

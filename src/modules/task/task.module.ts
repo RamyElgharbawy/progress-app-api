@@ -9,9 +9,10 @@ import {
 import { TaskRepository } from './repositories/task.repository';
 import { Task } from './entities/task.entity';
 import { TaskDependency } from './entities/task-dependency.entity';
+import { Plan } from '../plan/entities/plan.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task, TaskDependency])],
+  imports: [TypeOrmModule.forFeature([Task, TaskDependency, Plan])],
   controllers: [TaskController, PlanTaskController, DependencyController],
   providers: [TaskService, TaskRepository],
   exports: [TaskService, TaskRepository],

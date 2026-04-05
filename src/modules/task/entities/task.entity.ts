@@ -5,16 +5,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
-  Tree,
-  TreeParent,
-  TreeChildren,
 } from 'typeorm';
 import { Plan } from '../../plan/entities/plan.entity';
 import { TaskStatus } from '../enums/task-status.enum';
 
 @Entity('tasks')
-@Tree('closure-table') // Efficient hierarchical structure
 export class Task {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -27,13 +24,14 @@ export class Task {
   plan: Plan;
 
   // Self-referencing for parent-child relationship
-  @Column({ name: 'parent_id', nullable: true })
+  @Column({ name: 'parent_id', type: 'uuid', nullable: true })
   parentId: string | null;
 
-  @TreeParent()
+  @ManyToOne(() => Task, (task) => task.subtasks, { nullable: true })
+  @JoinColumn({ name: 'parent_id' })
   parent: Task | null;
 
-  @TreeChildren()
+  @OneToMany(() => Task, (task) => task.parent)
   subtasks: Task[];
 
   @Column({ length: 255 })

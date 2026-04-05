@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, TreeRepository, IsNull } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { Task } from '../entities/task.entity';
 import { TaskDependency } from '../entities/task-dependency.entity';
 import { TaskStatus } from '../enums/task-status.enum';
@@ -10,7 +10,7 @@ import { TaskStats } from '@/types/plan.types';
 export class TaskRepository {
   constructor(
     @InjectRepository(Task)
-    private readonly repository: TreeRepository<Task>,
+    private readonly repository: Repository<Task>,
 
     @InjectRepository(TaskDependency)
     private readonly dependencyRepository: Repository<TaskDependency>,
@@ -30,8 +30,35 @@ export class TaskRepository {
   }
 
   async findByIdWithSubtasks(id: string): Promise<Task | null> {
-    const task = await this.repository.findOne({ where: { id } });
-    return task ? this.repository.findDescendantsTree(task) : null;
+    const task = await this.repository.findOne({
+      where: { id },
+      relations: ['subtasks'],
+    });
+
+    if (!task) return null;
+
+    // Recursively load subtasks
+    if (task.subtasks && task.subtasks.length > 0) {
+      for (const subtask of task.subtasks) {
+        await this.loadSubtasksRecursively(subtask);
+      }
+    }
+
+    return task;
+  }
+
+  private async loadSubtasksRecursively(task: Task): Promise<void> {
+    const taskWithSubtasks = await this.repository.findOne({
+      where: { id: task.id },
+      relations: ['subtasks'],
+    });
+
+    if (taskWithSubtasks && taskWithSubtasks.subtasks) {
+      task.subtasks = taskWithSubtasks.subtasks;
+      for (const subtask of task.subtasks) {
+        await this.loadSubtasksRecursively(subtask);
+      }
+    }
   }
 
   async update(id: string, taskData: Partial<Task>): Promise<Task | null> {
@@ -62,18 +89,16 @@ export class TaskRepository {
         planId,
         parentId: IsNull(),
       },
+      relations: ['subtasks'],
       order: { createdAt: 'ASC' },
     });
 
-    // Load subtasks for each main task
-    const tasksWithSubtasks = await Promise.all(
-      mainTasks.map(async (task) => {
-        const descendants = await this.repository.findDescendantsTree(task);
-        return descendants;
-      }),
-    );
+    // Recursively load all subtasks
+    for (const task of mainTasks) {
+      await this.loadSubtasksRecursively(task);
+    }
 
-    return tasksWithSubtasks;
+    return mainTasks;
   }
 
   /**

@@ -26,6 +26,7 @@ export class TaskRepository {
   async findById(id: string): Promise<Task | null> {
     return this.repository.findOne({
       where: { id },
+      relations: ['dependencies'],
     });
   }
 

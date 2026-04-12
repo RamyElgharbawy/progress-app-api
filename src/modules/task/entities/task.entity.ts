@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Plan } from '../../plan/entities/plan.entity';
 import { TaskStatus } from '../enums/task-status.enum';
+import { TaskDependency } from './task-dependency.entity';
 
 @Entity('tasks')
 export class Task {
@@ -33,6 +34,10 @@ export class Task {
 
   @OneToMany(() => Task, (task) => task.parent)
   subtasks!: Task[];
+
+  // Task dependencies - tasks that this task depends on
+  @OneToMany(() => TaskDependency, (dependency) => dependency.task)
+  dependencies!: TaskDependency[];
 
   @Column({ length: 255 })
   name!: string;

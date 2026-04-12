@@ -50,7 +50,7 @@ export class PlanRepository {
     // Get plan with all tasks in tree structure
     return this.repository.findOne({
       where: { id },
-      relations: ['tasks', 'tasks.subtasks'],
+      relations: ['tasks'],
     });
   }
 

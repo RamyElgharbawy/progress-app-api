@@ -64,6 +64,9 @@ export class TaskService {
     // Recalculate parent progress
     await this.taskRepository.recalculateParentProgress(parentId);
 
+    // Recalculate plan progress
+    await this.recalculatePlanProgress(parent.planId);
+
     return task;
   }
 

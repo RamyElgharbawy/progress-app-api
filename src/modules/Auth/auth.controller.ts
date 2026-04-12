@@ -14,6 +14,7 @@ import {
 import { Public } from './decorators/public.decorator';
 
 @ApiTags('Authentication')
+@ApiBearerAuth('JWT-auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

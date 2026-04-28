@@ -114,7 +114,7 @@ export class TaskService {
    * Get subtasks of a task
    */
   async findSubtasks(parentId: string): Promise<Task[]> {
-    return this.taskRepository.findSubtasks(parentId);
+    return this.taskRepository.findSubtasks(parentId); //FIXME: Why this, doesn't use in controller ?
   }
 
   /**

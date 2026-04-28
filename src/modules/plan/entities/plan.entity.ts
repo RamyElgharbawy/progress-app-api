@@ -15,39 +15,39 @@ import { PlanStatus } from '../enums/plan-status.enum';
 @Entity('plans')
 export class Plan {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ length: 255 })
-  name: string;
+  name!: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description!: string;
 
   @Column({
     type: 'enum',
     enum: PlanStatus,
     default: PlanStatus.DRAFT,
   })
-  status: PlanStatus;
+  status!: PlanStatus;
 
   @Column({ type: 'int', default: 0 })
-  progress: number; // 0-100
+  progress!: number; // 0-100
 
   @Column({ name: 'created_by', nullable: true })
-  createdBy: string;
+  createdBy!: string;
 
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'created_by' })
-  creator: User;
+  creator!: User;
 
   @OneToMany(() => Task, (task: Task) => task.plan, { cascade: true })
-  tasks: Task[];
+  tasks!: Task[];
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   // Virtual property for lastModified (uses updatedAt)
   get lastModified(): string {

@@ -28,12 +28,15 @@ export class Task {
   @Column({ name: 'parent_id', type: 'uuid', nullable: true })
   parentId!: string | null;
 
-  @ManyToOne(() => Task, (task) => task.subtasks, { nullable: true })
+  @ManyToOne(() => Task, (task) => task.subtasks, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'parent_id' })
   parent!: Task | null;
 
   @OneToMany(() => Task, (task) => task.parent)
-  subtasks!: Task[];
+  subtasks!: Task[]; // TODO: test delete main task with subtasks after run migration
 
   // Task dependencies - tasks that this task depends on
   @OneToMany(() => TaskDependency, (dependency) => dependency.task)

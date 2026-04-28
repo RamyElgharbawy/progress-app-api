@@ -14,7 +14,7 @@ export class CreateUserDto {
   password: string;
 
   @ApiProperty({
-    example: 'StrongP@ssw0rd',
+    example: 'StrongPassword123!',
     description: 'Confirm password (must match the password field)',
   })
   @IsString()

@@ -41,7 +41,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User account is deactivated');
     }
 
-    // This will be attached to request.user
+    // user data that will be attached to request.user
     return {
       id: user.id,
       userName: user.userName,

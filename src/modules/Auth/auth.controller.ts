@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -14,12 +21,11 @@ import {
 import { Public } from './decorators/public.decorator';
 
 @ApiTags('Authentication')
-@ApiBearerAuth('JWT-auth')
 @Controller('auth')
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Public()
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({
@@ -32,7 +38,6 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
-  @Public()
   @Post('login')
   @ApiOperation({ summary: 'Login user' })
   @ApiResponse({

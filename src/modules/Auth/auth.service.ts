@@ -47,11 +47,7 @@ export class AuthService {
 
     return {
       accessToken,
-      user: {
-        id: user.id,
-        userName: user.userName,
-        isActive: user.isActive,
-      },
+      user,
     };
   }
 
@@ -88,28 +84,7 @@ export class AuthService {
 
     return {
       accessToken,
-      user: {
-        id: user.id,
-        userName: user.userName,
-        isActive: user.isActive,
-      },
-    };
-  }
-
-  /**
-   * Validate user (used by JWT strategy)
-   */
-  async validateUser(userId: string) {
-    const user = await this.userRepository.findById(userId);
-
-    if (!user || !user.isActive) {
-      return null;
-    }
-
-    return {
-      id: user.id,
-      userName: user.userName,
-      isActive: user.isActive,
+      user,
     };
   }
 
